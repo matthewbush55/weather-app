@@ -1,0 +1,20 @@
+.navbar {
+  background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+  color: #fff;
+}
+
+#search-title {
+  margin: 1em 0 0 0;
+}
+.form-label {
+  margin-top: 0.65em;
+  font-size: 1.5em;
+}
+
+#exampleFormControlInput1 {
+  margin-bottom: 0.5em;
+}
+
+#weather-today {
+  margin-top: 1em;
+}
