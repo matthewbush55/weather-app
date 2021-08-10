@@ -4,13 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
-      crossorigin="anonymous"
-    />
     <link type="text/css" href="assets/css/style.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
     <title>Weather Dashboard</title>
   </head>
 
@@ -19,7 +14,7 @@
     <header>
       <nav class="navbar">
         <div class="mx-auto">
-          <h1 class="fst-italic">Weather Dashboard</h1>
+          <h1>Weather Dashboard</h1>
         </div>
       </nav>
     </header>
@@ -29,42 +24,55 @@
         <div class="row">
       <!-- search bar components -->
             <aside class="col-md-3">
-                <div>
+                <form>
                     <label for="exampleFormControlInput1" class="form-label">Search for a city:</label>
-                    <input type="search" class="form-control" id="exampleFormControlInput1" placeholder="ex: Denver">
+                    <input type="text" class="form-control" id="text-searchbox" placeholder="ex: Denver">
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Search</button>
+                        <button type="submit" class="btn btn-primary mb-2" id="searchBtn">Search</button>
                     </div>
+                </form>
+                <hr>
+                <div> 
+                    <ul class="searchHistory d-grid gap-2 ps-0"></ul>
                 </div>
             </aside>
+
             <!-- current search weather components-->
-            <section class="col-md-9" id="weather-today">
+            <section class="col-md-9" id="container-today">
                 <div class="card shadow md-2">
-                    <div class="card-body">
-                        <div class="row">
-                            <h2 class="city">
-                                Denver (today's date)
-                            </h2>
-                            <img src="" alt="weather icon">
-                        </div>
-                        <p>Temp: 51&#176; F</p>
-                        <p>Wind: 22 MPH</p>
-                        <p>Humidity: 15% </p>
-                        <p>UV Index: 0.47</p>
+                    <div class="card-body current-weather">
+                        <!-- dynamically inserted from JS -->
                     </div>
                 </div>
+                <!-- 5-day forecast container -->
                 <div class="md-2">
-                    <h2 class="p-3">5-Day Forecast</h2>    
+                    <h2 class="mt-4 ps-3">5-Day Forecast</h2>
+                    <div class="forecast-container row">
+                        <div class="card-group">
+                            <div class="card">
+                              <!-- <img src="..." class="card-img-top" alt="..."> -->
+                              <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                              </div>
+                            </div>
+                            <div class="card">
+                                <!-- <img src="..." class="card-img-top" alt="..."> -->
+                                <div class="card-body">
+                                  <h5 class="card-title">Card title</h5>
+                                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                  <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                </div>
+                              </div>
+                        </div>
+                    </div>
                 </div>
             </section>
       
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="./assets/js/app.js" ></script>
-      <script/>
-      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/js/bootstrap.min.js"
-      integrity="sha512-NWNl2ZLgVBoi6lTcMsHgCQyrZVFnSmcaa3zRv0L3aoGXshwoxkGs3esa9zwQHsChGRL4aLDnJjJJeP6MjPX46Q=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    </script>
   </body>
 </html>
