@@ -3,7 +3,7 @@ var previousSearches = [];
 const key = "bf8fdf4df2703a2cb6877aab03ab9192";
 var currentDate = moment().format("l");
 
-// get city name that the user entered
+// get weather data from the OpenWeather API using the city name that the user entered by passing in the parameter from the function call triggered by the event listener on the "search" button
 function getCurrentWeather(newCity) {
   var currentWeatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${newCity}&units=imperial&appid=${key}`;
   var cityLon;
@@ -14,8 +14,8 @@ function getCurrentWeather(newCity) {
     method: "GET",
   }).then(function (data) {
     $(".current-weather").append(
-      `<div class="row">
-            <h3>${data.name} (${currentDate})</h3>
+      `<div class="d-flex">
+            <h3 class="align-self-center">${data.name} (${currentDate})</h3>
             <img src=http://openweathermap.org/img/wn/${data.weather[0].icon}.png>
         </div>`
     );
@@ -28,6 +28,7 @@ function getCurrentWeather(newCity) {
   });
 }
 
+// get the UV Index data from Weather OneCall API using parameters from the "getCurrentWeatherURL" function
 function getUVIndex(cityLat, cityLon) {
   var currentUVIndexURL = `https://api.openweathermap.org/data/2.5/onecall?lat=${cityLat}&lon=${cityLon}&appid=${key}`;
   console.log(currentUVIndexURL);
@@ -41,9 +42,7 @@ function getUVIndex(cityLat, cityLon) {
       uvRating = `<p>UV Index: <span class="badge bg-success p-2">${data.current.uvi}</span></p>`;
     } else if (data.current.uvi >= 3 && data.current.uvi <= 5.9) {
       uvRating = `<p>UV Index: <span class="badge bg-warning p-2">${data.current.uvi}</span></p>`;
-    } else if (data.current.uvi >= 6 && data.current.uvi <= 7.9) {
-      uvRating = `<p>UV Index: <span class="badge bg-warning">${data.current.uvi}</span></p>`;
-    } else if (data.current.uvi >= 8 && data.current.uvi <= 10.9) {
+    } else if (data.current.uvi >= 6 && data.current.uvi <= 10.9) {
       uvRating = `<p>UV Index: <span class="badge bg-danger p-2">${data.current.uvi}</span></p>`;
     } else if (data.current.uvi >= 11) {
       uvRating = `<p>UV Index: <span class="badge bg-danger">${data.current.uvi}</span></p>`;
@@ -73,5 +72,3 @@ $("#searchBtn").on("click", function (event) {
   getCurrentWeather(newCity);
   searchHistoryList();
 });
-
-// console.log(newCity);
