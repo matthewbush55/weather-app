@@ -106,9 +106,7 @@ function saveCities() {
 // display city weather stored in local storage
 function displayCities() {
   previousSearches.forEach((thisCity) => {
-    $(".searchHistory").prepend(
-      $(`<button class="btn btn-outline-secondary text-capitalize" data-city=${thisCity}>${thisCity}</button>`)
-    );
+    $(".searchHistory").prepend($(`<button class="btn btn-outline-secondary text-capitalize">${thisCity}</button>`));
   });
 }
 
@@ -127,7 +125,7 @@ function init() {
 
 // when a historical search button is clicked, get the data-city attribute and send it to the getCurrentWeather function. Also clears out the weather and 5-day display elements
 $(".searchHistory").on("click", function (event) {
-  var getCity = event.target.getAttribute("data-city");
+  var getCity = $(event.target).text();
   console.log(getCity);
   $(".current-weather").empty();
   $(".forecast-container").empty();
