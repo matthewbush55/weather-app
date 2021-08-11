@@ -16,6 +16,7 @@ function getCurrentWeather(getCity) {
     url: currentWeatherURL,
     method: "GET",
   }).then(function (data) {
+    console.log(data);
     $(".current-weather").append(
       `<div class="d-flex">
             <h3 class="align-self-center">${data.city.name} (${currentDate})</h3>
@@ -27,8 +28,9 @@ function getCurrentWeather(getCity) {
     $(".current-weather").append(`<p>Humidity: ${data.list[0].main.humidity}%</p>`);
     cityLon = data.city.coord.lon;
     cityLat = data.city.coord.lat;
+    // call UVIndex function passing in the cityLat & cityLon
     getUVIndex(cityLat, cityLon);
-    // call 5 day forecast function with city variables
+    // call 5 day forecast function passing in the currentWeatherURL
     getFiveDayForecast(currentWeatherURL);
   });
 }
