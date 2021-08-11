@@ -16,7 +16,6 @@ function getCurrentWeather(getCity) {
     url: currentWeatherURL,
     method: "GET",
   }).then(function (data) {
-    console.log(data);
     $(".current-weather").append(
       `<div class="d-flex">
             <h3 class="align-self-center">${data.city.name} (${currentDate})</h3>
@@ -45,17 +44,18 @@ function getFiveDayForecast(currentWeatherURL) {
     // loop through 5 day return API values and create cards for each
     for (i = 0; i < data.list.length; i++) {
       if (data.list[i].dt_txt.search("18:00:00") != -1) {
-        var forecastDate = data.list[i];
+        var rawForecastDate = data.list[i].dt_txt;
+        var forecastDate = moment(rawForecastDate).format("l");
         $(".forecast-container").append(
           `<div class="col mb-3">
                 <div class="card h-100">          
                     <div class="card-body">
-                        <h4 class="card-title">${moment(data.list[i].dt_text).format("l")}</h4>
+                        <h4 class="card-title">${forecastDate}</h4>
                         <div class="card-text">
-                            <img src="http://openweathermap.org/img/w/${forecastDate.weather[0].icon}.png">
-                            <p class="card-text">Temp: ${forecastDate.main.temp} &degF</p>
-                            <p class="card-text">Wind: ${forecastDate.wind.speed} MPH</p>
-                            <p class="card-text">Humidity: ${forecastDate.main.humidity} %</p>
+                            <img src="http://openweathermap.org/img/w/${data.list[i].weather[0].icon}.png">
+                            <p class="card-text">Temp: ${data.list[i].main.temp} &degF</p>
+                            <p class="card-text">Wind: ${data.list[i].wind.speed} MPH</p>
+                            <p class="card-text">Humidity: ${data.list[i].main.humidity} %</p>
                         </div>
                     </div>
                 </div>
@@ -128,6 +128,7 @@ function init() {
 // when a historical search button is clicked, get the data-city attribute and send it to the getCurrentWeather function. Also clears out the weather and 5-day display elements
 $(".searchHistory").on("click", function (event) {
   var getCity = event.target.getAttribute("data-city");
+  console.log(getCity);
   $(".current-weather").empty();
   $(".forecast-container").empty();
   $("#container-today").show();
