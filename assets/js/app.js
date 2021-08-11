@@ -3,35 +3,70 @@ var previousSearches = [];
 const key = "bf8fdf4df2703a2cb6877aab03ab9192";
 var currentDate = moment().format("l");
 
+// Call init function to initialize page content
+init();
+
 // get weather data from the OpenWeather API using the city name that the user entered by passing in the parameter from the function call triggered by the event listener on the "search" button
-function getCurrentWeather(newCity) {
-  var currentWeatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${newCity}&units=imperial&appid=${key}`;
+function getCurrentWeather(getCity) {
+  invalidAPIRequest = false;
+  var currentWeatherURL = `https://api.openweathermap.org/data/2.5/forecast?q=${getCity}&units=imperial&appid=${key}`;
   var cityLon;
   var cityLat;
-
   $.ajax({
     url: currentWeatherURL,
     method: "GET",
   }).then(function (data) {
     $(".current-weather").append(
       `<div class="d-flex">
-            <h3 class="align-self-center">${data.name} (${currentDate})</h3>
-            <img src=http://openweathermap.org/img/wn/${data.weather[0].icon}.png>
+            <h3 class="align-self-center">${data.city.name} (${currentDate})</h3>
+            <img src=http://openweathermap.org/img/w/${data.list[0].weather[0].icon}.png>
         </div>`
     );
-    $(".current-weather").append(`<p>Temp: ${data.main.temp}&#176 F</p>`);
-    $(".current-weather").append(`<p>Wind: ${data.wind.speed} MPH</p>`);
-    $(".current-weather").append(`<p>Humidity: ${data.main.humidity}%</p>`);
-    cityLon = data.coord.lon;
-    cityLat = data.coord.lat;
+    $(".current-weather").append(`<p>Temp: ${data.list[0].main.temp}&#176 F</p>`);
+    $(".current-weather").append(`<p>Wind: ${data.list[0].wind.speed} MPH</p>`);
+    $(".current-weather").append(`<p>Humidity: ${data.list[0].main.humidity}%</p>`);
+    cityLon = data.city.coord.lon;
+    cityLat = data.city.coord.lat;
     getUVIndex(cityLat, cityLon);
+    // call 5 day forecast function with city variables
+    getFiveDayForecast(currentWeatherURL);
+  });
+}
+
+// function to perform API call to get 5-day forecast
+function getFiveDayForecast(currentWeatherURL) {
+  var currentFiveDayURL = currentWeatherURL;
+  $.ajax({
+    url: currentFiveDayURL,
+    method: "GET",
+  }).then(function (data) {
+    // loop through 5 day return API values and create cards for each
+    for (i = 0; i < data.list.length; i++) {
+      if (data.list[i].dt_txt.search("18:00:00") != -1) {
+        var forecastDate = data.list[i];
+        $(".forecast-container").append(
+          `<div class="col mb-3">
+                <div class="card h-100">          
+                    <div class="card-body">
+                        <h4 class="card-title">${moment(data.list[i].dt_text).format("l")}</h4>
+                        <div class="card-text">
+                            <img src="http://openweathermap.org/img/w/${forecastDate.weather[0].icon}.png">
+                            <p class="card-text">Temp: ${forecastDate.main.temp} &degF</p>
+                            <p class="card-text">Wind: ${forecastDate.wind.speed} MPH</p>
+                            <p class="card-text">Humidity: ${forecastDate.main.humidity} %</p>
+                        </div>
+                    </div>
+                </div>
+            </div>`
+        );
+      }
+    }
   });
 }
 
 // get the UV Index data from Weather OneCall API using parameters from the "getCurrentWeatherURL" function
 function getUVIndex(cityLat, cityLon) {
   var currentUVIndexURL = `https://api.openweathermap.org/data/2.5/onecall?lat=${cityLat}&lon=${cityLon}&appid=${key}`;
-  console.log(currentUVIndexURL);
   $.ajax({
     url: currentUVIndexURL,
     method: "GET",
@@ -51,24 +86,74 @@ function getUVIndex(cityLat, cityLon) {
   });
 }
 
-// populate the search history elements
+// populate the search history elements and tag each with an attribute to use for previous search lookups
 function searchHistoryList() {
   $(".searchHistory").empty();
   previousSearches.forEach((thisCity) => {
     $(".searchHistory").prepend(
-      $(`<button class="btn btn-outline-secondary" data-city=${thisCity}>${thisCity}</button>`)
+      $(`<button class="btn btn-outline-secondary text-capitalize" data-city=${thisCity}>${thisCity}</button>`)
     );
   });
 }
 
+// save previous searches to local storage
+function saveCities() {
+  localStorage.setItem("cities", JSON.stringify(previousSearches));
+}
+
+// display city weather stored in local storage
+function displayCities() {
+  previousSearches.forEach((thisCity) => {
+    $(".searchHistory").prepend(
+      $(`<button class="btn btn-outline-secondary text-capitalize" data-city=${thisCity}>${thisCity}</button>`)
+    );
+  });
+}
+
+// Function to initialize page conent
+function init() {
+  var loadPreviousCities = JSON.parse(localStorage.getItem("cities"));
+
+  if (loadPreviousCities !== null) {
+    previousSearches = loadPreviousCities;
+  }
+  saveCities();
+  displayCities();
+  $(".current-weather").empty();
+  $("#container-today").hide();
+}
+
+// when a historical search button is clicked, get the data-city attribute and send it to the getCurrentWeather function. Also clears out the weather and 5-day display elements
+$(".searchHistory").on("click", function (event) {
+  var getCity = event.target.getAttribute("data-city");
+  $(".current-weather").empty();
+  $(".forecast-container").empty();
+  $("#container-today").show();
+  $(".forecast-container").show();
+  getCurrentWeather(getCity);
+});
+
 //event listener for search button to add the new city to the search history array
 $("#searchBtn").on("click", function (event) {
   event.preventDefault();
-  var newCity = $("#text-searchbox").val();
-  // prepend previous search list with the new city
-  previousSearches.push(newCity);
+  var getCity = $("#text-searchbox").val();
   // clear searchbox input
+  $(".current-weather").empty();
+  $(".forecast-container").empty();
+  // check to see that the searchbox has valid input
+  if (getCity === "" || !isNaN(getCity)) {
+    $("#text-searchbox").val("");
+    $("#container-today").hide();
+    $(".forecast-container").hide();
+    return;
+  }
+  // prepend previous search list with the new city
+  previousSearches.push(getCity);
+  $("#container-today").show();
   $("#text-searchbox").val("");
-  getCurrentWeather(newCity);
+  getCurrentWeather(getCity);
+  saveCities();
   searchHistoryList();
+  $("#container-today").show();
+  $(".forecast-container").show();
 });
